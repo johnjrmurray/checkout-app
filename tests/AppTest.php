@@ -42,6 +42,39 @@
   
           }
 
+          /**
+          * @covers \App\CalculatePrice
+          */
+          public function testProductC(): void
+          {
+            $checkout = new App;
+  
+            // Check standard price
+            $checkout->addItem('C', 1);
+            $this->assertEquals('0.20',$checkout->getTotal());
+  
+            // Check first possible special price
+            $checkout->addItem('C', 1);
+            $this->assertEquals('0.38',$checkout->getTotal());
+           
+            // check second possible special price
+            $checkout->addItem('C', 1);
+            $this->assertEquals('0.50',$checkout->getTotal());
+
+            // Check that lowest possible special price is applied
+            $checkout->addItem('C', 1);
+            $this->assertEquals('0.70',$checkout->getTotal());
+
+            // check another combo of special prices
+            $checkout->addItem('C', 1);
+            $this->assertEquals('0.88',$checkout->getTotal());
+
+            // check another combo of special prices
+            $checkout->addItem('C', 1);
+            $this->assertEquals('1.00',$checkout->getTotal());
+            
+          }
+
         /**
           * @covers \App\CalculatePrice
           */
@@ -62,4 +95,19 @@
             $this->assertEquals('0.70',$checkout->getTotal());
   
           }
+
+      /**
+       * @covers \App\CalculatePrice
+       */
+      public function testProductE(): void
+      {
+        $checkout = new App;
+
+        $checkout->addItem('E', 1);
+        $this->assertEquals('0.05',$checkout->getTotal());
+
+        $checkout->addItem('E', 1);
+        $this->assertEquals('0.10',$checkout->getTotal());
+
       }
+    }

@@ -65,10 +65,15 @@
 			$discountArray = $this->getDiscounts($sku);
 			$itemDiscount = 0;
 
-			// If there is an eligable product pair
-			// For the quantity of that item, then discount by
-			// the specified amount
-			if(isset($discountArray['eligibleProductPair'])) {
+			// If there are no discounts applicable 
+			if(empty($discountArray)) {
+				null;
+			} elseif(isset($discountArray['eligibleProductPair'])) {
+				// If there is an eligable product pair
+				// For the quantity of that item, then discount by
+				// the specified amount
+				
+				
 				// Get quantity of product pair
 				$checkoutItems = $this->getItems();
 				
@@ -83,6 +88,26 @@
 						$itemDiscount += $discountArray['totalDiscount'];
 					}
 				} 
+			// Multiple discounts available 
+			} elseif(count($discountArray) > 1 && (isset($discountArray[0]) && is_array($discountArray[0]))) {
+
+				// Sort array in descending order - highest possible discount will be first
+				$discountArray = array_reverse($discountArray);
+
+				$tempQty = $quantity;
+
+				foreach($discountArray as $discount) {
+
+					for($i = 0; $i < $quantity; $i++) {
+						// Attempt to take discount quantity off
+						if($tempQty - $discount['eligibleQuantity'] < 0) {
+							continue;
+						} else {
+							$itemDiscount += $discount['totalDiscount'];
+							$tempQty -= $discount['eligibleQuantity'];
+						}
+					}
+				}
 			} else {
 				// Simple discount - work out how many times to discount the item
 				$discountTimes = floor($quantity / $discountArray['eligibleQuantity']);
@@ -118,7 +143,13 @@
 					'totalDiscount' => 0.15
 				],
 				'C' => [
-
+					[
+						'eligibleQuantity' => 2,
+						'totalDiscount' => 0.02
+					], [
+						'eligibleQuantity' => 3,
+						'totalDiscount' => 0.10
+					]
 				],
 				'D' => [
 					'totalDiscount' => 0.10,
