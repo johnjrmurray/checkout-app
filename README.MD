@@ -1,4 +1,4 @@
 ## Instructions to run
 ```
-docker compose run phpunit --testdox
+docker compose run composer install && docker compose run phpunit --testdox
 ```
